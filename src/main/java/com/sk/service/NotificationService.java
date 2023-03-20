@@ -17,8 +17,8 @@ public class NotificationService {
 	private final NotificationRepository notifcationRepo;
 	private final NotificationMapper mapper;
 
-	public List<NotificationModel> findAllByContent(String keyWord) {
-		return mapper.entitiesToModels(notifcationRepo.findByContentLike(keyWord));
+	public List<NotificationModel> findAllByContent(String keyword) {
+		return mapper.entitiesToModels(notifcationRepo.findByContentLike(keyword));
 	}
 
 	public List<NotificationModel> updateAll(List<NotificationModel> models) {

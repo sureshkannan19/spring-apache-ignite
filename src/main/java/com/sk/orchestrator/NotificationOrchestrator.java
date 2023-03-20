@@ -15,8 +15,8 @@ public class NotificationOrchestrator {
 
 	private final NotificationService notificationService;
 
-	public List<NotificationModel> findAllByContent(String keyWord) {
-		return notificationService.findAllByContent(keyWord);
+	public List<NotificationModel> findAllByContent(String keyword) {
+		return notificationService.findAllByContent(keyword);
 	}
 
 	public List<NotificationModel> updateAll(List<NotificationModel> models) {

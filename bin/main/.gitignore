@@ -1,4 +1,2 @@
-/application.properties
 /com/
-/notification.sql
-/schema.sql
+/data.sql

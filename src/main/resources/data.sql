@@ -1,6 +1,3 @@
-delete
-from
-   notification;
 insert into notification
 (
    HEADLINE,

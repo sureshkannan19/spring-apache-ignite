@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sk.model.NotificationModel;
@@ -27,5 +28,11 @@ public class NotificationController {
 		log.info("Updating Notification...");
 		models.forEach(model -> model.setLastEditedDate(new Date()));
 		return notifcationOrchestrator.updateAll(models);
+	}
+	
+	@RequestMapping(path = "/notification/getFeedByContent", method = RequestMethod.GET)
+	public List<NotificationModel> getFeedByContent(@RequestParam(required = true, value="keyword") String keyword) {
+		log.info("Finding feed for keyword {} ...", keyword);
+		return notifcationOrchestrator.findAllByContent(keyword);
 	}
 }
