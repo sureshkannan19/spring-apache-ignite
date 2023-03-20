@@ -8,6 +8,6 @@ import com.sk.entity.Notification;
 
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
 
-	List<Notification> findByContentLike(String keyword);
+	List<Notification> findByContentContaining(String keyword);
 
 }
