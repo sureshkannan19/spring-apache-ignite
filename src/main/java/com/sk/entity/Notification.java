@@ -15,7 +15,7 @@ public class Notification {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int feedId;
+	private Long feedId;
 	private String headline;
 	private String content;
 	private Date lastEditedDate;

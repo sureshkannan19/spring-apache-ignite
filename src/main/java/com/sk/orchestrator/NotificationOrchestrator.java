@@ -23,4 +23,8 @@ public class NotificationOrchestrator {
 		return notificationService.updateAll(models);
 	}
 
+	public NotificationModel getFeedById(Long id) {
+		return notificationService.getFeedById(id);
+	}
+
 }

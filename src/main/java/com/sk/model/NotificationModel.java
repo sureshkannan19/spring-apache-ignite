@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class NotificationModel {
 
-	private Integer feedId;
+	private Long feedId;
 	private String headline;
 	private String content;
 	private Date lastEditedDate;
