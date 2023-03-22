@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.UpdateTimestamp;
+
 import lombok.Data;
 
 @Entity
@@ -18,6 +20,7 @@ public class Notification {
 	private Long feedId;
 	private String headline;
 	private String content;
+	@UpdateTimestamp
 	private Date lastEditedDate;
 	
 }
