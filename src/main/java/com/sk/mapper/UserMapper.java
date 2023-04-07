@@ -4,18 +4,18 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 
-import com.sk.entity.UserS;
-import com.sk.model.UserModel;
+import com.sk.entity.Users;
+import com.sk.model.UsersModel;
 
 @Mapper(componentModel = "spring", implementationName = "UserMapperImpl")
 public interface UserMapper {
 
-	UserModel entityToModel(UserS entity);
+	UsersModel entityToModel(Users entity);
 
-	UserS modelToEntity(UserModel model);
+	Users modelToEntity(UsersModel model);
 
-	List<UserModel> entitiesToModels(List<UserS> entities);
+	List<UsersModel> entitiesToModels(List<Users> entities);
 
-	List<UserS> modelsToEntities(List<UserModel> models);
+	List<Users> modelsToEntities(List<UsersModel> models);
 
 }

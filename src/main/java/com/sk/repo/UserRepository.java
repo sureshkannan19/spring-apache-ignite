@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.sk.entity.UserS;
+import com.sk.entity.Users;
 import com.sk.enums.Gender;
 
-public interface UserRepository extends JpaRepository<UserS, Long> {
+public interface UserRepository extends JpaRepository<Users, Long> {
 
-	List<UserS> findByGender(Gender gender);
+	List<Users> findByGender(Gender gender);
 
 }

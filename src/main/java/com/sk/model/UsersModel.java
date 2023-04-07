@@ -10,7 +10,7 @@ import com.sk.enums.Gender;
 import lombok.Data;
 
 @Data
-public class UserModel {
+public class UsersModel {
 
 	private Long id;
 	private String firstName;

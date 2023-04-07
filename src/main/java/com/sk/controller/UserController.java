@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sk.model.UserModel;
+import com.sk.model.UsersModel;
 import com.sk.orchestrator.UserOrchestrator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class UserController {
 	private UserOrchestrator userOrchestrator;
 
 	@RequestMapping(path = "/user/findByGender/{gender}", method = RequestMethod.GET)
-	public List<UserModel> findByGender(@PathVariable(required = true, name = "gender") String gender)
+	public List<UsersModel> findByGender(@PathVariable(required = true, name = "gender") String gender)
 			throws ParseException {
 		log.info("Searching for gender {}", gender);
 		return userOrchestrator.findByGender(gender);
