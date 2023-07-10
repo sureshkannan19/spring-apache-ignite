@@ -8,10 +8,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class SpringwebApplication {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringwebApplication.class, args);
-//		for (String name : applicationContext.getBeanDefinitionNames()) {
-//			System.out.println("Bean Name is  : " + name);
-//		}
+		start(args);
+	}
+
+	public static ConfigurableApplicationContext start(String[] args) {
+		return SpringApplication.run(SpringwebApplication.class, args);
+	}
+
+	public static void stop(ConfigurableApplicationContext configurableApplicationContext) {
+		configurableApplicationContext.close();
 	}
 
 }
