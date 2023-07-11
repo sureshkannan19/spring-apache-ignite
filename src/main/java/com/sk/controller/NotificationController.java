@@ -33,7 +33,7 @@ public class NotificationController {
 	@Autowired
 	private NotificationOrchestrator notifcationOrchestrator;
 
-	@PostMapping(path = "/notification/updateTodaysFeed")
+	@PostMapping(path = "/notification/updateTodaysFeed", consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public List<NotificationModel> updateDetails(@RequestBody(required = true) List<NotificationModel> models)
 			throws ParseException {
 		log.info("Updating Notification...");
@@ -60,13 +60,13 @@ public class NotificationController {
 		return notifcationOrchestrator.updateAll(models);
 	}
 
-	@GetMapping(path = "/notification/getFeedByContent")
+	@GetMapping(path = "/notification/getFeedByContent", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public List<NotificationModel> getFeedByContent(@RequestParam(required = true, value = "keyword") String keyword) {
 		log.info("Finding feed for keyword {} ...", keyword);
 		return notifcationOrchestrator.findAllByContent(keyword);
 	}
 
-	@GetMapping(path = "/notification/getFeedById/{id}")
+	@GetMapping(path = "/notification/getFeedById/{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public NotificationModel getFeedById(@PathVariable(required = true, name = "id") Long id) {
 		log.info("Finding feed for id {} ...", id);
 		return notifcationOrchestrator.getFeedById(id);
