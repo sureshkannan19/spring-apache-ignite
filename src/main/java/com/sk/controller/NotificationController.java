@@ -55,6 +55,7 @@ public class NotificationController {
 						.build());
 			}
 		} finally {
+			fileReader.close();
 		}
 		return notifcationOrchestrator.updateAll(models);
 	}
