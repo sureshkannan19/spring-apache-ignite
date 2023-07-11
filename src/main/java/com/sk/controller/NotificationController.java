@@ -1,15 +1,25 @@
 package com.sk.controller;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.input.BOMInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sk.model.NotificationModel;
 import com.sk.orchestrator.NotificationOrchestrator;
@@ -23,20 +33,39 @@ public class NotificationController {
 	@Autowired
 	private NotificationOrchestrator notifcationOrchestrator;
 
-	@RequestMapping(path = "/notification/updateTodaysFeed", method = RequestMethod.POST)
+	@PostMapping(path = "/notification/updateTodaysFeed")
 	public List<NotificationModel> updateDetails(@RequestBody(required = true) List<NotificationModel> models)
 			throws ParseException {
 		log.info("Updating Notification...");
 		return notifcationOrchestrator.updateAll(models);
 	}
 
-	@RequestMapping(path = "/notification/getFeedByContent", method = RequestMethod.GET)
+	@PostMapping(path = "/notification/updateDetailsViaMultipartFile", consumes = {
+			MediaType.MULTIPART_FORM_DATA_VALUE })
+	public List<NotificationModel> updateDetailsViaMultipartFile(@RequestBody(required = true) MultipartFile file)
+			throws ParseException, IOException {
+		log.info("Updating Notification...");
+		Reader fileReader = new InputStreamReader(new BOMInputStream(file.getInputStream()), StandardCharsets.UTF_8);
+		List<NotificationModel> models = new ArrayList<>();
+		try {
+			Iterable<CSVRecord> csvRecords = CSVFormat.EXCEL.withHeader().parse(fileReader);
+			for (CSVRecord record : csvRecords) {
+				log.info("Notification Model {} ", record);
+				models.add(NotificationModel.builder().content(record.get("content")).headline(record.get("headline"))
+						.build());
+			}
+		} finally {
+		}
+		return notifcationOrchestrator.updateAll(models);
+	}
+
+	@GetMapping(path = "/notification/getFeedByContent")
 	public List<NotificationModel> getFeedByContent(@RequestParam(required = true, value = "keyword") String keyword) {
 		log.info("Finding feed for keyword {} ...", keyword);
 		return notifcationOrchestrator.findAllByContent(keyword);
 	}
 
-	@RequestMapping(path = "/notification/getFeedById/{id}", method = RequestMethod.GET)
+	@GetMapping(path = "/notification/getFeedById/{id}")
 	public NotificationModel getFeedById(@PathVariable(required = true, name = "id") Long id) {
 		log.info("Finding feed for id {} ...", id);
 		return notifcationOrchestrator.getFeedById(id);

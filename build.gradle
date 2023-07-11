@@ -46,6 +46,10 @@ dependencies {
 	testImplementation group: 'com.intuit.karate', name: 'karate-apache', version: '0.9.6'
 	// https://mvnrepository.com/artifact/com.intuit.karate/karate-junit5
 	testImplementation group: 'com.intuit.karate', name: 'karate-junit5', version: '1.4.0'
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
+	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-io
+	implementation group: 'commons-io', name: 'commons-io', version: '2.13.0'
 	
 	
 	// db
