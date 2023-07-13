@@ -50,7 +50,6 @@ public class NotificationController {
 		try {
 			Iterable<CSVRecord> csvRecords = CSVFormat.EXCEL.withHeader().parse(fileReader);
 			for (CSVRecord record : csvRecords) {
-				log.info("Notification Model {} ", record);
 				models.add(NotificationModel.builder().content(record.get("content")).headline(record.get("headline"))
 						.build());
 			}
