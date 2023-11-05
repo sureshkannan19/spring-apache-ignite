@@ -15,6 +15,6 @@ Feature: Testing notification api's
 	And param keyword = 'SK'
 	When method get
 	Then status 200
-	* print response
-	
+	* def result = karate.jsonPath(response, "$[?(@.feedId == 4)]");
+	* print result
 	
