@@ -12,12 +12,16 @@ import lombok.Data;
 @Data
 public class UsersModel {
 
-	private Long id;
-	private String firstName;
-	private String lastName;
-	private String email;
-	private String dateOfBirth;
-	@Enumerated(EnumType.STRING)
-	private Gender gender;
-	private Date lastLoginTs;
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String dateOfBirth;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+    private Date lastLoginTs;
+
+    public String getFullName() {
+        return this.firstName + this.lastName;
+    }
 }
