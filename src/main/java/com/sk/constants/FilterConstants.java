@@ -2,6 +2,11 @@ package com.sk.constants;
 
 public class FilterConstants {
 
-    public static final String SIGN_IN_TOKEN = "sign-in-token";
-    public static final String SIGN_IN_KEY = "sign-in-key";
+    public static final String SECRET_KEY = "secretKey";
+
+    public static final String SIGNED_IN_USER = "signed-in-user-token";
+
+    public static final String SUBJECT = "userDetails";
+
+    public static final String USER_CLAIMS = "userClaims";
 }
