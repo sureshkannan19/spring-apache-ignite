@@ -10,7 +10,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 war {
-    enabled=false
+    enabled = false
 }
 
 configurations {
@@ -47,7 +47,6 @@ dependencies {
 //    implementation "org.apache.ignite:ignite-spring:${igniteVersion}"
     implementation "org.apache.ignite:ignite-core:${igniteVersion}"
     implementation "org.apache.ignite:ignite-indexing:${igniteVersion}"
-
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.12.3'
 

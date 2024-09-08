@@ -24,9 +24,9 @@ public class EmployeeCacheController {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/search/{id}")
-    public ResponseEntity<List<Employee>> getEmployeeCache(@PathVariable("id") String idOrNumber) {
-        return new ResponseEntity<>(employeeCacheService.searchIndex(idOrNumber), HttpStatus.OK);
+    @GetMapping(path = "/search/{text}")
+    public ResponseEntity<List<Employee>> getEmployeeCache(@PathVariable("text") String text) {
+        return new ResponseEntity<>(employeeCacheService.searchIndex(text), HttpStatus.OK);
     }
 
     @GetMapping(path = "/search")
@@ -43,5 +43,16 @@ public class EmployeeCacheController {
                                                             @RequestParam("text") String text) {
         return new ResponseEntity<>(employeeCacheService.partialTextSearch(fieldName, text), HttpStatus.OK);
     }
+
+    @PostMapping(path = "/employee")
+    public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee) {
+        return new ResponseEntity<>(employeeCacheService.updateEmployee(employee), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/employeeAsync")
+    public ResponseEntity<Employee> updateEmployeeAsync() throws InterruptedException {
+        return new ResponseEntity<>(employeeCacheService.updateEmployeeAsync(6L), HttpStatus.OK);
+    }
+
 
 }

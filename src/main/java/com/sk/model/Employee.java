@@ -20,19 +20,25 @@ public class Employee implements Serializable {
     private static final long serialVersionUID = 4078175067760766420L;
 
     @QuerySqlField(index = true)
+    @QueryTextField
     private Long employeeId;
-    @QueryTextField
+
     @QuerySqlField(index = true)
+    @QueryTextField
     private String firstName;
-    @QueryTextField
+
     @QuerySqlField(index = true)
+    @QueryTextField
     private String lastName;
+
+    @QuerySqlField(index = true)
     @QueryTextField
-    @QuerySqlField
     private String address;
+
+    @QuerySqlField(index = true)
     @QueryTextField
-    @QuerySqlField
     private String job;
+
     @QuerySqlField(index = true)
     private long mobileNumber;
 

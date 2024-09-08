@@ -2,23 +2,23 @@ package com.sk.enums;
 
 import com.sk.model.Employee;
 import lombok.Getter;
-
-import java.util.Arrays;
-import java.util.List;
+import org.apache.ignite.cache.CacheAtomicityMode;
 
 @Getter
 public enum Caches {
 
-    EMP_CACHE("EMP_CACHE", Employee.class, Arrays.asList(Long.class, String.class));
+    EMP_CACHE("EMP_CACHE", Employee.class, new Class[]{Long.class, Employee.class}, CacheAtomicityMode.TRANSACTIONAL);
 
     private final String cacheName;
     private final Class clazz;
-    private final List<Class> indexes;
+    private final Class[] indexedTypes;
+    private final CacheAtomicityMode atomicityMode;
 
-    Caches(String cacheName, Class clazz, List<Class> indexes) {
+    Caches(String cacheName, Class clazz, Class[] indexedTypes, CacheAtomicityMode atomicityMode) {
         this.cacheName = cacheName;
         this.clazz = clazz;
-        this.indexes = indexes;
+        this.indexedTypes = indexedTypes;
+        this.atomicityMode = atomicityMode;
     }
 
 }

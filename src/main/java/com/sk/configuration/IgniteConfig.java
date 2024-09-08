@@ -1,9 +1,13 @@
 package com.sk.configuration;
 
 import com.sk.enums.Caches;
+import com.sk.model.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.CacheAtomicityMode;
+import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cluster.ClusterState;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
@@ -14,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
+import java.util.Objects;
 
 @Configuration
 @Slf4j
@@ -49,10 +54,20 @@ public class IgniteConfig {
     public Ignite populateIgniteCacheConfig(@Qualifier("ignite") Ignite ignite) {
         for (Caches cache : Caches.values()) {
             log.info("Loading cache config for {} ", cache.getCacheName());
-            CacheConfiguration cacheCfg = new CacheConfiguration<>(cache.getCacheName());
-            cacheCfg.setIndexedTypes(Long.class, cache.getClazz());
-            ignite.getOrCreateCache(cacheCfg);
-            System.out.println(cacheCfg.getIndexedTypes());
+            IgniteCache<Object, Object> igniteCache = ignite.cache(cache.getCacheName());
+            CacheConfiguration cc = null;
+            if (Objects.nonNull(igniteCache)
+                    && !cache.getAtomicityMode().equals((cc = igniteCache.getConfiguration(CacheConfiguration.class)).getAtomicityMode())) {
+                ignite.destroyCache(Caches.EMP_CACHE.getCacheName());
+            } else {
+                CacheConfiguration<Long, Employee> clientCacheConfig = new CacheConfiguration<>(Caches.EMP_CACHE.getCacheName());
+                clientCacheConfig.setIndexedTypes(cache.getIndexedTypes());
+                clientCacheConfig.setCacheMode(CacheMode.REPLICATED);           // Override cache mode at client side
+                clientCacheConfig.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);  // Override atomicity mode
+                clientCacheConfig.setBackups(1);
+                ignite.addCacheConfiguration(clientCacheConfig);
+                ignite.getOrCreateCache(clientCacheConfig);
+            }
         }
         return ignite;
     }
