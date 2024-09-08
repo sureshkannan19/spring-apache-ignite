@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'war'
-    id 'org.springframework.boot' version '2.7.4'
+    id 'org.springframework.boot' version '2.7.18'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
@@ -22,6 +22,7 @@ configurations {
 ext {
     mapstructVersion = "1.4.2.Final"
     projectLombokVersion = "1.18.24"
+    igniteVersion = "2.16.0"
 }
 
 sourceSets {
@@ -43,7 +44,10 @@ compileJava {
 }
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot-devtools"
+//    implementation "org.apache.ignite:ignite-spring:${igniteVersion}"
+    implementation "org.apache.ignite:ignite-core:${igniteVersion}"
+    implementation "org.apache.ignite:ignite-indexing:${igniteVersion}"
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.12.3'
 
@@ -61,7 +65,7 @@ dependencies {
 
     // db
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.h2database:h2'
+    implementation 'com.h2database:h2:1.4.197'
 
     annotationProcessor 'org.projectlombok:lombok'
     implementation group: 'org.xhtmlrenderer', name: 'flying-saucer-pdf', version: '9.5.1'
