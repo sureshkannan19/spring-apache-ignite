@@ -63,7 +63,6 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
     }
 
     public Employee updateEmployee(Employee updatedEmpDetails) {
-        log.info("Locking employee {} Thread name {}", updatedEmpDetails.getEmployeeId(), Thread.currentThread().getId());
         IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
         Employee currentEmpDetails = employeeCache.get(updatedEmpDetails.getEmployeeId());
         Lock lock = employeeCache.lock(updatedEmpDetails.getEmployeeId());
@@ -78,7 +77,7 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
         } finally {
             // Release the lock
             lock.unlock();
-            log.info("Releasing lock of employee {}", updatedEmpDetails.getEmployeeId());
+            log.info("Employee {} lock is released by thread name {}", updatedEmpDetails.getEmployeeId(), Thread.currentThread().getId());
         }
         return employeeCache.get(updatedEmpDetails.getEmployeeId());
     }
@@ -91,13 +90,13 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
         Thread thread1 = new Thread(() -> {
             lock.lock();
             try {
-                log.info("Entry {} locked by thread name {}", employeeId, Thread.currentThread().getId());
+                log.info("Employee {} is locked by thread name {}", employeeId, Thread.currentThread().getId());
                 Thread.sleep(5000);  // Hold lock for 5 seconds
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
                 lock.unlock();
-                log.info("Entry {} locked released by thread name {}", employeeId, Thread.currentThread().getId());
+                log.info("Employee {} lock is released by thread name {}", employeeId, Thread.currentThread().getId());
             }
         });
 
@@ -112,12 +111,33 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
             }
         });
 
+        // Thread 2: Tries to update different(not - locked) entry , should execute immediately
+        Thread thread3 = new Thread(() -> {
+            try {
+                Employee emp = employeeCache.get(1L);
+                emp.setAddress("Updated by thread 3");
+                updateEmployee(emp);
+            } catch (Exception e) {
+                System.out.println("Failed to update, lock held by another thread");
+            }
+        });
+
         thread1.start();
         Thread.sleep(1000);  // Ensure thread1 holds the lock
         thread2.start();
+        thread3.start();
 
         thread1.join();
         thread2.join();
+        thread3.join();
+
+//        01:39:21.329  Employee 6 is locked by thread name 117
+//        01:39:22.330  Employee 1 is locked by Thread name 119
+//        01:39:22.442  Employee 1 lock is released by thread name 119
+//        01:39:26.332  Employee 6 lock is released by thread name 117
+//        01:39:26.343  Employee 6 is locked by Thread name 118
+//        01:39:26.352  Employee 6 lock is released by thread name 118
+
         return employeeCache.get(employeeId);
     }
 
