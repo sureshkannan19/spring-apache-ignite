@@ -19,12 +19,14 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
 
     public void loadEmployee() {
         Map<Long, Employee> employees = new HashMap<>();
-        employees.put(1L, new Employee(1L, "Cristiano", "Ronaldo", "No 24, Portugal", "Footballer", 777777));
-        employees.put(2L, new Employee(2L, "Virat", "Kohli", "No 24, India", "Cricketer", 181818));
-        employees.put(3L, new Employee(3L, "Bruce", "Wayne", "No 24, Gotham, Wayne Enterprises", "Fight against crime", 11111));
-        employees.put(4L, new Employee(4L, "Barry", "Allen", "No 24, Central city", "Fight against crime", 222222));
-        employees.put(5L, new Employee(5L, "Dean", "Winchester", "No 24, Kansas, USA", "Demon hunter", 77777));
-        employees.put(6L, new Employee(6L, "Billy", "Butcher", "No 24, New york, USA", "Superhero hunter", 333333));
+        for (long i = 1; i < 10000; i++) {
+            employees.put(i, new Employee(i++, "Cristiano", "Ronaldo", "No 24, Portugal", "Footballer", 777777));
+            employees.put(i, new Employee(i++, "Virat", "Kohli", "No 24, India", "Cricketer", 181818));
+            employees.put(i, new Employee(i++, "Bruce", "Wayne", "No 24, Gotham, Wayne Enterprises", "Fight against crime", 11111));
+            employees.put(i, new Employee(i++, "Barry", "Allen", "No 24, Central city", "Fight against crime", 222222));
+            employees.put(i, new Employee(i++, "Dean", "Winchester", "No 24, Kansas, USA", "Demon hunter", 77777));
+            employees.put(i, new Employee(i++, "Billy", "Butcher", "No 24, New york, USA", "Superhero hunter", 333333));
+        }
         IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
         employeeCache.putAll(employees);
     }
@@ -50,11 +52,11 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
     public IgniteDtoWrapper partialTextSearch(String fieldName, String text) {
         IgniteDtoWrapper dtoWrapper = new IgniteDtoWrapper();
         dtoWrapper.setCount(0);
-        List<List<?>> employees = sqlQuerySearch(Map.of(fieldName, text) , dtoWrapper);
+        List<List<?>> employees = sqlPartialSearch(Map.of(fieldName, text), dtoWrapper);
         dtoWrapper.setData(employees.stream().map(obj -> Employee.builder().employeeId((Long) obj.get(0))
-                .firstName(String.valueOf(obj.get(1))).lastName(String.valueOf(obj.get(2)))
-                .address(String.valueOf(obj.get(3))).job(String.valueOf(obj.get(4)))
-                .mobileNumber((long) obj.get(5)).build())
+                        .firstName(String.valueOf(obj.get(1))).lastName(String.valueOf(obj.get(2)))
+                        .address(String.valueOf(obj.get(3))).job(String.valueOf(obj.get(4)))
+                        .mobileNumber((long) obj.get(5)).build())
                 .toList());
         return dtoWrapper;
     }
@@ -155,6 +157,31 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
 
         return employeeCache.get(employeeId);
     }
+
+    public void delete(Long employeeId) {
+        IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
+        Employee currentEmpDetails = employeeCache.get(employeeId);
+        Lock lock = employeeCache.lock(employeeId);
+        try {
+            if (Objects.nonNull(currentEmpDetails)) {
+                lock.lock();
+                log.info("Employee {} is locked by Thread name {}", employeeId, Thread.currentThread().getId());
+                employeeCache.remove(employeeId);
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Error occurred while updating employee : " + employeeId, ex);
+        } finally {
+            // Release the lock
+            lock.unlock();
+            log.info("Employee {} lock is released by thread name {}", employeeId, Thread.currentThread().getId());
+        }
+    }
+
+    public void deleteAll() {
+        IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
+        employeeCache.removeAll();
+    }
+
 
     @Override
     public Caches cache() {

@@ -45,7 +45,7 @@ public class EmployeeCacheController {
         return new ResponseEntity<>(employeeCacheService.partialTextSearch(fieldName, text), HttpStatus.OK);
     }
 
-    @PostMapping(path = "/employee")
+    @PostMapping(path = "/upsert")
     public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee) {
         return new ResponseEntity<>(employeeCacheService.updateEmployee(employee), HttpStatus.OK);
     }
@@ -55,5 +55,16 @@ public class EmployeeCacheController {
         return new ResponseEntity<>(employeeCacheService.updateEmployeeAsync(6L), HttpStatus.OK);
     }
 
+    @DeleteMapping(path = "/delete/{empId}")
+    public ResponseEntity<Boolean> deleteEmployee(@PathVariable Long empId) {
+        employeeCacheService.delete(empId);
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/delete")
+    public ResponseEntity<Boolean> deleteEmployees() {
+        employeeCacheService.deleteAll();
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,16 +28,18 @@ public abstract class CacheService<K, V> {
         return ignite.getOrCreateCache(cache().getCacheName());
     }
 
-    public List<List<?>> sqlQuerySearch(Map<String, String> predicates, StringBuilder sql,
-                                        IgniteDtoWrapper igniteDtoWrapper) {
+    public List<List<?>> sqlPartialSearch(Map<String, String> keyValuePredicates, StringBuilder sql,
+                                          IgniteDtoWrapper igniteDtoWrapper) {
         IgniteCache<K, V> cache = getOrCreateCache();
-        Object[] val = new Object[predicates.size()];
+        Object[] val = new Object[keyValuePredicates.size()];
         int index = 0;
-        for (Map.Entry<String, String> query : predicates.entrySet()) {
-            sql.append(query.getKey()).append(" like ? ").append(" ");
+        List<String> predicates = new ArrayList<>();
+        for (Map.Entry<String, String> query : keyValuePredicates.entrySet()) {
+            predicates.add(query.getKey() + " like ? ");
             val[index] = "%" + query.getValue() + "%";
             index++;
         }
+        sql.append(String.join(" and ", predicates));
         SqlFieldsQuery sqlQuery = new SqlFieldsQuery(sql.toString()).setArgs(val);
         log.info("Query :: " + sqlQuery.getSql());
         FieldsQueryCursor<List<?>> cursor = cache.query(sqlQuery);
@@ -45,9 +48,9 @@ public abstract class CacheService<K, V> {
         return CollectionUtils.isEmpty(result) ? Collections.emptyList() : result;
     }
 
-    public List<List<?>> sqlQuerySearch(Map<String, String> predicates,
-                                        IgniteDtoWrapper igniteDtoWrapper) {
-        return sqlQuerySearch(predicates,
+    public List<List<?>> sqlPartialSearch(Map<String, String> predicates,
+                                          IgniteDtoWrapper igniteDtoWrapper) {
+        return sqlPartialSearch(predicates,
                 new StringBuilder("select * from " + cache().getClazz().getSimpleName() + " where "),
                 igniteDtoWrapper);
     }
