@@ -76,7 +76,7 @@ public class IgniteConfig {
     }
 
     private void updateCacheConfiguration(Ignite ignite, Caches cache) {
-        CacheConfiguration<Long, Employee> clientCacheConfig = new CacheConfiguration<>(Caches.EMP_CACHE.getCacheName());
+        CacheConfiguration<Long, Employee> clientCacheConfig = new CacheConfiguration<>(cache.getCacheName());
         clientCacheConfig.setIndexedTypes(cache.getIndexedTypes());
         clientCacheConfig.setCacheMode(CacheMode.REPLICATED);           // Override cache mode at client side
         clientCacheConfig.setAtomicityMode(cache.getAtomicityMode());  // Override atomicity mode
