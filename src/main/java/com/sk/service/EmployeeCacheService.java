@@ -90,6 +90,20 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
         return employeeCache.get(updatedEmpDetails.getEmployeeId());
     }
 
+    /**
+     * Output of Employee entry update async :
+     * //        01:39:21.329  Employee 6 is locked by thread name 117
+     * //        01:39:22.330  Employee 1 is locked by Thread name 119
+     * //        01:39:22.442  Employee 1 lock is released by thread name 119
+     * //        01:39:26.332  Employee 6 lock is released by thread name 117
+     * //        01:39:26.343  Employee 6 is locked by Thread name 118
+     * //        01:39:26.352  Employee 6 lock is released by thread name 118
+     *
+     * @param employeeId
+     * @return
+     * @throws InterruptedException
+     */
+
     public Employee updateEmployeeAsync(Long employeeId) throws InterruptedException {
         IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
         Lock lock = employeeCache.lock(employeeId);
@@ -138,13 +152,6 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
         thread1.join();
         thread2.join();
         thread3.join();
-
-//        01:39:21.329  Employee 6 is locked by thread name 117
-//        01:39:22.330  Employee 1 is locked by Thread name 119
-//        01:39:22.442  Employee 1 lock is released by thread name 119
-//        01:39:26.332  Employee 6 lock is released by thread name 117
-//        01:39:26.343  Employee 6 is locked by Thread name 118
-//        01:39:26.352  Employee 6 lock is released by thread name 118
 
         return employeeCache.get(employeeId);
     }
