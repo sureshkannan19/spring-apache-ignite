@@ -64,7 +64,7 @@ public class IgniteConfig {
             if (Objects.nonNull(igniteCache)) {
                 if (!cache.getAtomicityMode().equals((cc = igniteCache.getConfiguration(CacheConfiguration.class)).getAtomicityMode())) {
                     log.info("Destroying & Re-loading cache config for {} ", cache.getCacheName());
-                    ignite.destroyCache(Caches.EMP_CACHE.getCacheName());
+                    ignite.destroyCache(cache.getCacheName());
                     updateCacheConfiguration(ignite, cache);
                 }
             } else {
