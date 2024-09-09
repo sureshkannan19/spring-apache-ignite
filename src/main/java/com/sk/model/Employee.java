@@ -40,6 +40,7 @@ public class Employee implements Serializable {
     private String job;
 
     @QuerySqlField(index = true)
+    @QueryTextField
     private long mobileNumber;
 
 }

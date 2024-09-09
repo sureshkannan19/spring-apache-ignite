@@ -56,10 +56,8 @@ public class IgniteConfig {
             log.info("Loading cache config for {} ", cache.getCacheName());
             IgniteCache<Object, Object> igniteCache = ignite.cache(cache.getCacheName());
             CacheConfiguration cc = null;
-            if (Objects.nonNull(igniteCache)
-                    && !cache.getAtomicityMode().equals((cc = igniteCache.getConfiguration(CacheConfiguration.class)).getAtomicityMode())) {
+            if (Objects.nonNull(igniteCache) && !cache.getAtomicityMode().equals((cc = igniteCache.getConfiguration(CacheConfiguration.class)).getAtomicityMode())) {
                 ignite.destroyCache(Caches.EMP_CACHE.getCacheName());
-            } else {
                 CacheConfiguration<Long, Employee> clientCacheConfig = new CacheConfiguration<>(Caches.EMP_CACHE.getCacheName());
                 clientCacheConfig.setIndexedTypes(cache.getIndexedTypes());
                 clientCacheConfig.setCacheMode(CacheMode.REPLICATED);           // Override cache mode at client side
