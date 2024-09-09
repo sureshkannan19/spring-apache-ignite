@@ -2,6 +2,7 @@ package com.sk.service;
 
 import com.sk.enums.Caches;
 import com.sk.model.Employee;
+import com.sk.model.IgniteDtoWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.query.QueryCursor;
@@ -46,9 +47,16 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
         return searchEmployees(employeeCache, textQuery);
     }
 
-    public List<Employee> partialTextSearch(String fieldName, String text) {
-        List<List<?>> employees = sqlQuerySearch(Map.of(fieldName, text));
-        return employees.stream().map(obj -> Employee.builder().employeeId((Long) obj.get(0)).firstName(String.valueOf(obj.get(1))).lastName(String.valueOf(obj.get(2))).address(String.valueOf(obj.get(3))).job(String.valueOf(obj.get(4))).mobileNumber((long) obj.get(5)).build()).toList();
+    public IgniteDtoWrapper partialTextSearch(String fieldName, String text) {
+        IgniteDtoWrapper dtoWrapper = new IgniteDtoWrapper();
+        dtoWrapper.setCount(0);
+        List<List<?>> employees = sqlQuerySearch(Map.of(fieldName, text) , dtoWrapper);
+        dtoWrapper.setData(employees.stream().map(obj -> Employee.builder().employeeId((Long) obj.get(0))
+                .firstName(String.valueOf(obj.get(1))).lastName(String.valueOf(obj.get(2)))
+                .address(String.valueOf(obj.get(3))).job(String.valueOf(obj.get(4)))
+                .mobileNumber((long) obj.get(5)).build())
+                .toList());
+        return dtoWrapper;
     }
 
     private List<Employee> searchEmployees(IgniteCache<Long, Employee> igniteCache, TextQuery<Long, Employee> textQuery) {

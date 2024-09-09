@@ -1,9 +1,11 @@
 package com.sk.service;
 
 import com.sk.enums.Caches;
+import com.sk.model.IgniteDtoWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.cache.query.FieldsQueryCursor;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,9 +27,9 @@ public abstract class CacheService<K, V> {
         return ignite.getOrCreateCache(cache().getCacheName());
     }
 
-    public List<List<?>> sqlQuerySearch(Map<String, String> predicates) {
+    public List<List<?>> sqlQuerySearch(Map<String, String> predicates, StringBuilder sql,
+                                        IgniteDtoWrapper igniteDtoWrapper) {
         IgniteCache<K, V> cache = getOrCreateCache();
-        StringBuilder sql = new StringBuilder("select * from " + cache().getClazz().getSimpleName() + " where ");
         Object[] val = new Object[predicates.size()];
         int index = 0;
         for (Map.Entry<String, String> query : predicates.entrySet()) {
@@ -37,9 +39,17 @@ public abstract class CacheService<K, V> {
         }
         SqlFieldsQuery sqlQuery = new SqlFieldsQuery(sql.toString()).setArgs(val);
         log.info("Query :: " + sqlQuery.getSql());
-        List<List<?>> result = cache.query(sqlQuery).getAll();
+        FieldsQueryCursor<List<?>> cursor = cache.query(sqlQuery);
+        List<List<?>> result = cursor.getAll();
+        igniteDtoWrapper.setCount(result.size());
         return CollectionUtils.isEmpty(result) ? Collections.emptyList() : result;
     }
 
+    public List<List<?>> sqlQuerySearch(Map<String, String> predicates,
+                                        IgniteDtoWrapper igniteDtoWrapper) {
+        return sqlQuerySearch(predicates,
+                new StringBuilder("select * from " + cache().getClazz().getSimpleName() + " where "),
+                igniteDtoWrapper);
+    }
 
 }

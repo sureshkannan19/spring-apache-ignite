@@ -1,6 +1,7 @@
 package com.sk.controller;
 
 import com.sk.model.Employee;
+import com.sk.model.IgniteDtoWrapper;
 import com.sk.service.EmployeeCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,8 @@ public class EmployeeCacheController {
     }
 
     @GetMapping(path = "/partialSearch")
-    public ResponseEntity<List<Employee>> partialTextSearch(@RequestParam("fieldName") String fieldName,
-                                                            @RequestParam("text") String text) {
+    public ResponseEntity<IgniteDtoWrapper> partialTextSearch(@RequestParam("fieldName") String fieldName,
+                                                              @RequestParam("text") String text) {
         return new ResponseEntity<>(employeeCacheService.partialTextSearch(fieldName, text), HttpStatus.OK);
     }
 
