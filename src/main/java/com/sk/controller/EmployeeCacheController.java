@@ -21,7 +21,19 @@ public class EmployeeCacheController {
 
     @PostMapping(path = "/load")
     public ResponseEntity<Boolean> loadEmployeeCache() {
-        employeeCacheService.loadEmployee();
+        employeeCacheService.loadEmployees();
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/add")
+    public ResponseEntity<Boolean> addEmployee(@RequestBody Employee emp) {
+        employeeCacheService.addEmployee(emp);
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/destroy")
+    public ResponseEntity<Boolean> destroyAndCreateEmployeeCache() {
+        employeeCacheService.destroyAndCreateEmployeeCache();
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 

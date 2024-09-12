@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 @Slf4j
 public class EmployeeCacheService extends CacheService<Long, Employee> {
 
-    public void loadEmployee() {
+    public void loadEmployees() {
         Map<Long, Employee> employees = new HashMap<>();
         for (long i = 1; i < 10000; i++) {
             employees.put(i, new Employee(i++, "Cristiano", "Ronaldo", "No 24, Portugal", "Footballer", 777777));
@@ -29,6 +29,11 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
         }
         IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
         employeeCache.putAll(employees);
+    }
+
+    public void addEmployee(Employee emp) {
+        IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
+        employeeCache.put(emp.getEmployeeId(), emp);
     }
 
     public List<Employee> searchIndex(String text) {
@@ -186,5 +191,11 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
     @Override
     public Caches cache() {
         return Caches.EMP_CACHE;
+    }
+
+    public void destroyAndCreateEmployeeCache() {
+        ignite.destroyCache(cache().getCacheName());
+        updateCacheConfiguration();
+        loadEmployees();
     }
 }
