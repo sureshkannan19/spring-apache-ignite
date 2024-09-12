@@ -5,11 +5,9 @@ import com.sk.model.Employee;
 import com.sk.model.IgniteDtoWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ignite.IgniteCache;
-import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.TextQuery;
 import org.springframework.stereotype.Service;
 
-import javax.cache.Cache;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 
@@ -36,22 +34,20 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
         employeeCache.put(emp.getEmployeeId(), emp);
     }
 
-    public List<Employee> searchIndex(String text) {
-        IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
-        TextQuery<Long, Employee> textQuery = new TextQuery<>(Employee.class, text);
-        return searchEmployees(employeeCache, textQuery);
+    public List<Employee> fullTextSearch(String text) {
+        return fullTextOrFuzzySearch(new TextQuery<>(Employee.class, text));
     }
 
-    public List<Employee> fullTextSearch(String text) {
-        IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
-        TextQuery<Long, Employee> textQuery = new TextQuery<>(Employee.class, text + "~");
-        return searchEmployees(employeeCache, textQuery);
+    public List<Employee> fuzzyTextSearch(String text) {
+        return fullTextOrFuzzySearch(new TextQuery<>(Employee.class, text + "~"));
+    }
+
+    public List<Employee> fuzzyTextSearchByFieldName(String fieldName, String text) {
+        return fullTextOrFuzzySearch(new TextQuery<>(Employee.class, fieldName + ":" + text + "~"));
     }
 
     public List<Employee> fullTextSearchByFieldName(String fieldName, String text) {
-        IgniteCache<Long, Employee> employeeCache = getOrCreateCache();
-        TextQuery<Long, Employee> textQuery = new TextQuery<>(Employee.class, fieldName + ":" + text + "~");
-        return searchEmployees(employeeCache, textQuery);
+        return fullTextOrFuzzySearch(new TextQuery<>(Employee.class, fieldName + ":" + text));
     }
 
     public IgniteDtoWrapper partialTextSearch(String fieldName, String text) {
@@ -64,17 +60,6 @@ public class EmployeeCacheService extends CacheService<Long, Employee> {
                         .mobileNumber((long) obj.get(5)).build())
                 .toList());
         return dtoWrapper;
-    }
-
-    private List<Employee> searchEmployees(IgniteCache<Long, Employee> igniteCache, TextQuery<Long, Employee> textQuery) {
-        List<Employee> employees = new ArrayList<>();
-        log.info("Query :: " + textQuery.getText());
-        try (QueryCursor<Cache.Entry<Long, Employee>> cursor = igniteCache.query(textQuery)) {
-            for (Cache.Entry<Long, Employee> entry : cursor) {
-                employees.add(entry.getValue());
-            }
-        }
-        return employees;
     }
 
     public Employee updateEmployee(Employee updatedEmpDetails) {

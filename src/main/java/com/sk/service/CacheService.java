@@ -8,12 +8,15 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.query.FieldsQueryCursor;
+import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
+import org.apache.ignite.cache.query.TextQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
 
+import javax.cache.Cache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +32,17 @@ public abstract class CacheService<K, V> {
 
     public IgniteCache<K, V> getOrCreateCache() {
         return ignite.getOrCreateCache(cache().getCacheName());
+    }
+
+    public List<V> fullTextOrFuzzySearch(TextQuery<K, V> textQuery) {
+        List<V> result = new ArrayList<>();
+        log.info("Query :: " + textQuery.getText());
+        try (QueryCursor<Cache.Entry<K, V>> cursor = getOrCreateCache().query(textQuery)) {
+            for (Cache.Entry<K, V> entry : cursor) {
+                result.add(entry.getValue());
+            }
+        }
+        return result;
     }
 
     public List<List<?>> sqlPartialSearch(Map<String, String> keyValuePredicates, StringBuilder sql,

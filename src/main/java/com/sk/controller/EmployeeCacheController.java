@@ -39,16 +39,16 @@ public class EmployeeCacheController {
 
     @GetMapping(path = "/search/{text}")
     public ResponseEntity<List<Employee>> getEmployeeCache(@PathVariable("text") String text) {
-        return new ResponseEntity<>(employeeCacheService.searchIndex(text), HttpStatus.OK);
+        return new ResponseEntity<>(employeeCacheService.fullTextSearch(text), HttpStatus.OK);
     }
 
     @GetMapping(path = "/search")
     public ResponseEntity<List<Employee>> getEmployeeCacheByText(@RequestParam(value = "fieldName", required = false) String fieldName,
                                                                  @RequestParam("text") String text) {
         if (StringUtils.hasText(fieldName)) {
-            return new ResponseEntity<>(employeeCacheService.fullTextSearchByFieldName(fieldName, text), HttpStatus.OK);
+            return new ResponseEntity<>(employeeCacheService.fuzzyTextSearchByFieldName(fieldName, text), HttpStatus.OK);
         }
-        return new ResponseEntity<>(employeeCacheService.fullTextSearch(text), HttpStatus.OK);
+        return new ResponseEntity<>(employeeCacheService.fuzzyTextSearch(text), HttpStatus.OK);
     }
 
     @GetMapping(path = "/partialSearch")
