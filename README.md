@@ -14,7 +14,9 @@ For READ mode: ignite.cluster().state(ClusterState.ACTIVE_READ_ONLY);
 
 ### Destroy and reload cache on configuration change:
 In case of adding new column or new index in POJO's, changing atomicity - reload cache.
-
+```
+ignite.destroyCache(CACHE_NAME);
+```
 ### Ignite as Search:
 #### For Full-Text Search (FTS): 
     Dependency: implementation "org.apache.ignite:ignite-core:${igniteVersion}" - uses Lucene Engine
